@@ -1,0 +1,5 @@
+{
+    "binance_api_key": "YOUR_BINANCE_API_KEY",
+    "binance_api_secret": "YOUR_BINANCE_API_SECRET",
+    "openai_api_key": "YOUR_OPENAI_API_KEY"
+}
