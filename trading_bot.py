@@ -1,21 +1,13 @@
-from data_fetcher import get_market_data
-from analysis import analyze_market, parse_decision
+# trader.py
 
-def main():
-    symbol = 'BTC/USDT'
-    data = get_market_data(symbol)
-    decision = analyze_market(data)
-    action, amount = parse_decision(decision)
-    
-    if action == 'buy':
-        print(f"Executing buy for {amount} units of {symbol}")
-        # Add trading execution logic here
-    elif action == 'sell':
-        print(f"Executing sell for {amount} units of {symbol}")
-        # Add trading execution logic here
+from data_fetcher import initialize_exchange
+
+def execute_trade(symbol, action, amount):
+    exchange = initialize_exchange()
+    if action == 'buy' or action == 'sell':
+        order = exchange.create_order(symbol, type='market', side=action, amount=amount)
+        return order
     else:
-        print("No action recommended.")
-
-if __name__ == "__main__":
-    main()
+        print("Holding, no action required.")
+        return None
 
