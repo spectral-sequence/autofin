@@ -1,27 +1,25 @@
+# data_fetcher.py
+
 import ccxt
 import pandas as pd
-from technical_indicators import calculate_indicators
+from config_manager import load_config
+from technical_indicators import calculate_indicators  # Assuming you've a module for technical calculations
+
+config = load_config()
 
 def initialize_exchange():
-    # Initialize and return CCXT Binance exchange connection
     exchange = ccxt.binance({
-        'apiKey': 'your-api-key',
-        'secret': 'your-api-secret',
-        'enableRateLimit': True,
-        'options': {'defaultType': 'spot'}
+        'apiKey': config['binance_api_key'],
+        'secret': config['binance_api_secret'],
+        'enableRateLimit': True
     })
     return exchange
 
-def fetch_ohlcv_data(symbol, timeframe='1m', since=None, limit=1440):
+def fetch_ohlcv_data(symbol, timeframe='1m', limit=1000):
     exchange = initialize_exchange()
-    ohlcv = exchange.fetch_ohlcv(symbol, timeframe, since, limit)
+    ohlcv = exchange.fetch_ohlcv(symbol, timeframe, limit=limit)
     df = pd.DataFrame(ohlcv, columns=['timestamp', 'open', 'high', 'low', 'close', 'volume'])
     df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
     df.set_index('timestamp', inplace=True)
+    df = calculate_indicators(df)  # Calculate technical indicators
     return df
-
-def get_market_data(symbol):
-    data = fetch_ohlcv_data(symbol)
-    indicators = calculate_indicators(data)
-    return data.join(indicators)
-
